@@ -5,32 +5,22 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
 import java.io.IOException;
-import java.util.Random;
 import java.util.concurrent.TimeoutException;
 
-public class Sender {
-    private final static String EXCHANGE_NAME = "directExchange";
-    private final static String TYPE_OF_EXCHANGE = "direct";
-    private static int countOfMessages = 5000;
+public  class Sender {
+    private String exchange_name;
+    private String routing_key;
+    private static Channel channel;
 
-    public static void main(String[] args) {
-        // make connection
+    public Sender(String host, String exchange_name, String type_of_exchange, String routing_key) {
+        this.exchange_name = exchange_name;
+        this.routing_key = routing_key;
         ConnectionFactory factory = new ConnectionFactory();
-        try (Connection connection = factory.newConnection()) {
-            // to send messages to another host, specify the ip of this host
-            factory.setHost("localhost");
-            Channel channel = connection.createChannel();
-            channel.exchangeDeclare(EXCHANGE_NAME, TYPE_OF_EXCHANGE, true);
-
-            int count = 0;
-            while (count < countOfMessages){
-                String message = generateRandomText();
-                // send message to exchange
-                channel.basicPublish(EXCHANGE_NAME, "tree", null, message.getBytes("UTF-8"));
-                System.out.println("Message is published: " + count + " " + message);
-                count++;
-                try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
-            }
+        try {
+            Connection connection = factory.newConnection();
+            factory.setHost(host);
+            channel = connection.createChannel();
+            channel.exchangeDeclare(exchange_name, type_of_exchange, true);
         }catch (IOException e){
             e.printStackTrace();
         }catch (TimeoutException e){
@@ -38,19 +28,13 @@ public class Sender {
         }
     }
 
-    // generate random text for String
-    private static String generateRandomText (){
-        String characters = "abcdefghijklmnopqrstyvwxyz";
-        String random = "";
-        Random rand = new Random();
-        int length = rand.nextInt(15);
-        char [] a = new char[length];
-        for (int i = 0; i < length; i++){
-            a[i] = characters.charAt(rand.nextInt(characters.length()));
+    // send message to exchange
+    public void sendMessage (String message){
+        try {
+            channel.basicPublish(exchange_name, routing_key, null, message.getBytes("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        for (int i = 0; i < a.length; i++){
-            random += a[i];
-        }
-        return random;
+        System.out.println("Message is published: " + " " + message);
     }
 }
