@@ -12,11 +12,11 @@ public class Consumer {
         ConnectionFactory factory = new ConnectionFactory();
         try {
             Connection connection = factory.newConnection();
-            // создаем новое соединение
+            // make connection
             Channel channel = connection.createChannel();
-            // указываем очередь из которой будем получать сообщения
+            // specify the queue for receiving messages
             channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-            // получаем все
+            // receive all messages
             channel.basicConsume(QUEUE_NAME, true, (consumerTag, delivery) -> {
                 String mes = new String (delivery.getBody(), "UTF-8");
                 System.out.println("I just received the message = " + mes);

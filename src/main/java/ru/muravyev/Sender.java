@@ -13,11 +13,11 @@ public class Sender {
     private final static String TYPE_OF_EXCHANGE = "direct";
     private static int countOfMessages = 5000;
 
-    public static void main(String[] args) throws IOException, TimeoutException {
-        // создаем соединение
+    public static void main(String[] args) {
+        // make connection
         ConnectionFactory factory = new ConnectionFactory();
         try (Connection connection = factory.newConnection()) {
-            // для отправки сообщений на другой хост, нужно дописать ip адрес нужного хоста
+            // to send messages to another host, specify the ip of this host
             factory.setHost("localhost");
             Channel channel = connection.createChannel();
             channel.exchangeDeclare(EXCHANGE_NAME, TYPE_OF_EXCHANGE, true);
@@ -29,7 +29,6 @@ public class Sender {
                 channel.basicPublish(EXCHANGE_NAME, "tree", null, message.getBytes("UTF-8"));
                 System.out.println("Message is published: " + count + " " + message);
                 count++;
-                //System.out.println("Published message " + count + ": " + message);
                 try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
             }
         }catch (IOException e){
@@ -40,7 +39,7 @@ public class Sender {
     }
 
     // generate random text for String
-    public static String generateRandomText (){
+    private static String generateRandomText (){
         String characters = "abcdefghijklmnopqrstyvwxyz";
         String random = "";
         Random rand = new Random();
