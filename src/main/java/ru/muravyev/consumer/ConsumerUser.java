@@ -1,4 +1,6 @@
-package ru.muravyev;
+package ru.muravyev.consumer;
+
+import ru.muravyev.consumer.Consumer;
 
 public class ConsumerUser {
     public static void main(String[] args) {
@@ -8,5 +10,8 @@ public class ConsumerUser {
         while (consumer.consumeMessage()!= null){
             System.out.println(consumer.consumeMessage());
         }
+
+        // close connection
+        consumer.closeConnection();
     }
 }

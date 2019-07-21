@@ -1,4 +1,4 @@
-package ru.muravyev;
+package ru.muravyev.consumer;
 
 import com.rabbitmq.client.*;
 
@@ -9,13 +9,14 @@ public class Consumer {
     private String queue_name;
     private static String message;
     private static Channel channel;
+    private Connection connection;
 
     public Consumer(String queue_name) {
         this.queue_name = queue_name;
         ConnectionFactory factory = new ConnectionFactory();
         try {
             // make connection
-            Connection connection = factory.newConnection();
+            connection = factory.newConnection();
             // make chanel
             channel = connection.createChannel();
             // specify the queue for receiving messages
@@ -39,5 +40,14 @@ public class Consumer {
             e.printStackTrace();
         }
         return message;
+    }
+
+    // close connection
+    public void closeConnection () {
+        try {
+            connection.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
